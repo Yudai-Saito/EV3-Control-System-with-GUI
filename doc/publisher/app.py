@@ -43,8 +43,7 @@ class Trace(tk.Frame):
         self.name = txt
         page = tk.Frame(master)
         self.widget(txt)
-        self.pack()
-    
+
     def widget(self, txt):
         label = tk.Label(self, text=txt, font=("", 30))
         label.pack()
@@ -53,30 +52,30 @@ class Trace(tk.Frame):
         return self.name
 
 
-def main():
+class Menu(tk.Menu):
+    def __init__(self, master):
+        super().__init__(master)
+        self.create_menu(master)
+
+    def create_menu(self, master):
+        menubar = tk.Menu(master)
+        
+        filemenu = tk.Menu(menubar, tearoff=0)
+        filemenu.add_command(label="Open")
+        filemenu.add_command(label="Save")
+        filemenu.add_command(label="Exit")
+        
+        menubar.add_cascade(label="File", menu=filemenu)
+        
+        master.config(menu=menubar)
+
+
+if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("1100x600")
     root.title("EV3 Control System with GUI")
 
     app = Gui(master=root)
-    app.pack()
+    Menu(root)
 
-    create_menu(root)
-    
     root.mainloop()
-
-def create_menu(master):
-    menubar = tk.Menu(master)
-    
-    filemenu = tk.Menu(menubar, tearoff=0)
-    filemenu.add_command(label="Open")
-    filemenu.add_command(label="Save")
-    filemenu.add_command(label="Exit")
-    
-    menubar.add_cascade(label="File", menu=filemenu)
-    
-    master.config(menu=menubar)
-
-
-if __name__ == "__main__":
-    main()
