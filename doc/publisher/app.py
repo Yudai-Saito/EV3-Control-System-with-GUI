@@ -36,7 +36,10 @@ class Port(tk.Frame):
         # 設定ボタン押す -> port1変数へ格納 -> subへ送信 -> 送信情報を元にifでport設定
 
         y = 0.15
-        for i in range(4):
+        for i in ["1", "2", "3", "4"]:
+            label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
+            label.place(relx=0.04, rely=y-0.1, relwidth=0.03, relheight=0.05)
+
             label = tk.Label(self, text="sensor")
             label.place(relx=0.2, rely=y)
 
@@ -50,7 +53,10 @@ class Port(tk.Frame):
     def motor_combobox(self):
 
         y = 0.15
-        for i in range(4):
+        for i in ["A", "B", "C", "D"]:
+            label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
+            label.place(relx=0.54, rely=y-0.1, relwidth=0.03, relheight=0.05)
+
             label = tk.Label(self, text="motor")
             label.place(relx=0.7, rely=y)
 
