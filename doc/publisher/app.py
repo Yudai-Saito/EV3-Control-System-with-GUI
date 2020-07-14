@@ -3,6 +3,9 @@
 import tkinter as tk
 from tkinter import ttk
 
+import pathlib
+from PIL import Image, ImageTk
+
 #import pub
 
 
@@ -33,21 +36,40 @@ class Port(tk.Frame):
         self.motor_combobox()
 
     def sensor_combobox(self):
-        # 設定ボタン押す -> port1変数へ格納 -> subへ送信 -> 送信情報を元にifでport設定
 
+        sensor_pic_path = ["../../pic/none.png", "../../pic/color_sensor.jpg", "../../pic/jayro_sensor.jpg", "../../pic/touch_sensor.jpg", "../../pic/ultrasonic_sensor.jpg"]
+        # 設定ボタン押す -> port1変数へ格納 -> subへ送信 -> 送信情報を元にifでport設定
+        
         y = 0.15
         for i in ["1", "2", "3", "4"]:
             label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
             label.place(relx=0.04, rely=y-0.1, relwidth=0.03, relheight=0.05)
+
+            label = tk.Label(self, text="mode")
+            label.place(relx=0.2, rely=y+0.07)
 
             label = tk.Label(self, text="sensor")
             label.place(relx=0.2, rely=y)
 
             sensor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Jayro Sensor", "Touch Sensor", "Ultrasonc Sensor"])
             sensor_port.place(relx=0.25, rely=y)
-
             sensor_port.current(0)
-            sensor_port.bind("<<ComboboxSelected>>", lambda e: print(sensor_port.get()))
+            sensor_port.bind("<<ComboboxSelected>>", (lambda e, sensor_port=sensor_port: print(sensor_port.get())))
+
+            y += 0.23
+            
+
+        y = 0.1
+        for i in range(4):
+
+            sensor_img = Image.open(pathlib.Path(sensor_pic_path[0]))
+            sensor_img = sensor_img.resize((100,100))
+            sensor_img = ImageTk.PhotoImage(sensor_img)
+
+            sensor_img_lbl = tk.Label(self, image=sensor_img)
+            sensor_img_lbl.photo = sensor_img
+            sensor_img_lbl.place(relx=0.09, rely=y)
+
             y += 0.23
 
     def motor_combobox(self):
@@ -63,6 +85,8 @@ class Port(tk.Frame):
             motor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Medium Motor", "Large Motor"])
             motor_port.place(relx=0.75, rely=y)
             motor_port.current(0)
+            motor_port.bind("<<ComboboxSelected>>", (lambda e, motor_port=motor_port: print(motor_port.get())))
+
             y += 0.23
 
     def ret_name(self):
