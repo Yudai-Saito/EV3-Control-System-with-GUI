@@ -58,15 +58,20 @@ class Port(tk.Frame):
         py = 0.1
         by = 0.1
         for i in sensor_port_name:
-            #sensor port num
+            #port num txt
             label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
             label.place(relx=0.04, rely=by, relwidth=0.03, relheight=0.05)
 
-            #sensor mode txt
+            #mode txt
             label = tk.Label(self, text="mode")
             label.place(relx=0.2, rely=by+0.07)
 
-            #call pic path
+            #mode combobox
+            sensor_mode = ttk.Combobox(self, state="readonly",values="NONE")
+            sensor_mode.place(relx=0.25, rely=by+0.07)
+            sensor_mode.current(0)
+
+            #picture
             sensor_img = Image.open(pathlib.Path(self.sensor_pic_path["none"]))
             sensor_img = sensor_img.resize((100,100))
             sensor_img = ImageTk.PhotoImage(sensor_img)
@@ -75,33 +80,41 @@ class Port(tk.Frame):
             sensor_img_lbl.photo = sensor_img
             sensor_img_lbl.place(relx=0.09, rely=py)
 
-            #sensor name txt
+            #name txt
             label = tk.Label(self, text="sensor")
             label.place(relx=0.2, rely=by)
 
-            #sensor combobox
+            #combobox
             sensor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Jayro Sensor", "Touch Sensor", "Ultrasonc Sensor"])
             sensor_port.place(relx=0.25, rely=by)
             sensor_port.current(0)
-            sensor_port.bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = py, dest_sensor=sensor_img_lbl, sensor_port=sensor_port: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get())))
+            sensor_port.bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = py, dest_sensor=sensor_img_lbl, sensor_port=sensor_port, sensor_mode = sensor_mode: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get(), sensor_mode)))
 
             py += 0.23
             by += 0.23
 
-    def sensor_pic_change(self, x, y, dest_sensor, sensor_type):
-
-        dest_sensor.destroy()
+    def sensor_pic_change(self, x, y, dest_sensor, sensor_type, sensor_mode):
 
         if sensor_type == "NONE":
             sensor_type = "none"
+            mode = ["NONE"]
         elif sensor_type == "Color Sensor":
             sensor_type = "color"
+            mode = ["REFLECT", "AMBIENT", "COLOR", "REF-RAW", "RGB-RAW"]
         elif sensor_type == "Jayro Sensor":
             sensor_type = "jayro"
+            mode = ["ANGLE", "RATE", "FAS", "G&A", "CAL"]
         elif sensor_type == "Touch Sensor":
             sensor_type = "touch"
+            mode = ["TOUCH"]
         elif sensor_type == "Ultrasonc Sensor":
             sensor_type = "ultrasonic"
+            mode = ["DIST-CM", "DIST-IN", "LISTEN", "SI-CM", "SI-IN"]
+
+        sensor_mode.configure(values=mode)
+        sensor_mode.current(0)
+        
+        dest_sensor.destroy()
 
         sensor_img = Image.open(pathlib.Path(self.sensor_pic_path[sensor_type]))
         sensor_img = sensor_img.resize((100,100))
