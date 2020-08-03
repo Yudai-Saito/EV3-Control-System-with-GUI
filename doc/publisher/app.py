@@ -23,7 +23,6 @@ class Home(tk.Menu, ttk.Notebook):
         for i in notes:
             note.add(i, text=i.ret_name())
 
-
         note.pack(fill=tk.BOTH, expand=True) 
 
     def create_menu(self, master):
@@ -38,6 +37,13 @@ class Home(tk.Menu, ttk.Notebook):
 
 
 class Port(tk.Frame):
+    sensor_pic_path = { "none" : "../../pic/none.jpg", 
+                        "color" : "../../pic/color_sensor.jpg", 
+                        "jayro" : "../../pic/jayro_sensor.jpg", 
+                        "touch" : "../../pic/touch_sensor.jpg", 
+                        "ultrasonic" : "../../pic/ultrasonic_sensor.jpg"
+                        }
+
     def __init__(self, master=None, txt=None):
         super().__init__(master)
         self.name = txt
@@ -47,50 +53,67 @@ class Port(tk.Frame):
 
     def sensor_combobox(self):
 
-        sensor_pic_path = { "none" : "../../pic/none.png", 
-                            "color" : "../../pic/color_sensor.jpg", 
-                            "jayro" : "../../pic/jayro_sensor.jpg", 
-                            "touch" : "../../pic/touch_sensor.jpg", 
-                            "ultrasonic" : "../../pic/ultrasonic_sensor.jpg"
-                            }
-        # 設定ボタン押す -> port1変数へ格納 -> subへ送信 -> 送信情報を元にifでport設定
         sensor_port_name = ["1", "2", "3", "4"]
 
-        y = 0.15
+        py = 0.1
+        by = 0.1
         for i in sensor_port_name:
+            #sensor port num
             label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
-            label.place(relx=0.04, rely=y-0.1, relwidth=0.03, relheight=0.05)
+            label.place(relx=0.04, rely=by, relwidth=0.03, relheight=0.05)
 
+            #sensor mode txt
             label = tk.Label(self, text="mode")
-            label.place(relx=0.2, rely=y+0.07)
+            label.place(relx=0.2, rely=by+0.07)
 
-            label = tk.Label(self, text="sensor")
-            label.place(relx=0.2, rely=y)
-
-            sensor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Jayro Sensor", "Touch Sensor", "Ultrasonc Sensor"])
-            sensor_port.place(relx=0.25, rely=y)
-            sensor_port.current(0)
-            sensor_port.bind("<<ComboboxSelected>>", (lambda e, sensor_port=sensor_port: print(sensor_port.get())))
-
-            y += 0.23
-            
-
-        y = 0.1
-        for i in range(4):
-
-            sensor_img = Image.open(pathlib.Path(sensor_pic_path["none"]))
+            #call pic path
+            sensor_img = Image.open(pathlib.Path(self.sensor_pic_path["none"]))
             sensor_img = sensor_img.resize((100,100))
             sensor_img = ImageTk.PhotoImage(sensor_img)
 
             sensor_img_lbl = tk.Label(self, image=sensor_img)
             sensor_img_lbl.photo = sensor_img
-            sensor_img_lbl.place(relx=0.09, rely=y)
+            sensor_img_lbl.place(relx=0.09, rely=py)
 
-            y += 0.23
+            #sensor name txt
+            label = tk.Label(self, text="sensor")
+            label.place(relx=0.2, rely=by)
+
+            #sensor combobox
+            sensor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Jayro Sensor", "Touch Sensor", "Ultrasonc Sensor"])
+            sensor_port.place(relx=0.25, rely=by)
+            sensor_port.current(0)
+            sensor_port.bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = py, dest_sensor=sensor_img_lbl, sensor_port=sensor_port: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get())))
+
+            py += 0.23
+            by += 0.23
+
+    def sensor_pic_change(self, x, y, dest_sensor, sensor_type):
+
+        dest_sensor.destroy()
+
+        if sensor_type == "NONE":
+            sensor_type = "none"
+        elif sensor_type == "Color Sensor":
+            sensor_type = "color"
+        elif sensor_type == "Jayro Sensor":
+            sensor_type = "jayro"
+        elif sensor_type == "Touch Sensor":
+            sensor_type = "touch"
+        elif sensor_type == "Ultrasonc Sensor":
+            sensor_type = "ultrasonic"
+
+        sensor_img = Image.open(pathlib.Path(self.sensor_pic_path[sensor_type]))
+        sensor_img = sensor_img.resize((100,100))
+        sensor_img = ImageTk.PhotoImage(sensor_img)
+
+        sensor_img_lbl = tk.Label(self, image=sensor_img)
+        sensor_img_lbl.photo = sensor_img
+        sensor_img_lbl.place(relx=x, rely=y)
 
     def motor_combobox(self):
 
-        motor_pic_path = { "none" : "../../pic/none.png", 
+        motor_pic_path = { "none" : "../../pic/none.jpg", 
                             "large" : "../../pic/large_motor.jpg", 
                             "midium" : "../../midium_motor.jpg"
                             }
