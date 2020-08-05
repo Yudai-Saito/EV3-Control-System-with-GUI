@@ -55,20 +55,23 @@ class Port(tk.Frame):
 
         sensor_port_name = ["1", "2", "3", "4"]
 
-        py = 0.1
-        by = 0.1
+        y = 0.1
         for i in sensor_port_name:
             #port num txt
             label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
-            label.place(relx=0.04, rely=by, relwidth=0.03, relheight=0.05)
+            label.place(relx=0.04, rely=y, relwidth=0.03, relheight=0.05)
+
+            #port value
+            label = tk.Label(self, relief="sunken", font=("", 15, "bold"))
+            label.place(relx=0.25, rely=y+0.12, relwidth=0.16, relheight=0.07)
 
             #mode txt
             label = tk.Label(self, text="mode")
-            label.place(relx=0.2, rely=by+0.07)
+            label.place(relx=0.2, rely=y+0.07)
 
             #mode combobox
             sensor_mode = ttk.Combobox(self, state="readonly",values="NONE")
-            sensor_mode.place(relx=0.25, rely=by+0.07)
+            sensor_mode.place(relx=0.25, rely=y+0.07)
             sensor_mode.current(0)
 
             #picture
@@ -78,20 +81,20 @@ class Port(tk.Frame):
 
             sensor_img_lbl = tk.Label(self, image=sensor_img)
             sensor_img_lbl.photo = sensor_img
-            sensor_img_lbl.place(relx=0.09, rely=py)
+            sensor_img_lbl.place(relx=0.09, rely=y)
 
             #name txt
             label = tk.Label(self, text="sensor")
-            label.place(relx=0.2, rely=by)
+            label.place(relx=0.2, rely=y)
 
             #combobox
             sensor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Jayro Sensor", "Touch Sensor", "Ultrasonc Sensor"])
-            sensor_port.place(relx=0.25, rely=by)
+            sensor_port.place(relx=0.25, rely=y)
             sensor_port.current(0)
-            sensor_port.bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = py, dest_sensor=sensor_img_lbl, sensor_port=sensor_port, sensor_mode = sensor_mode: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get(), sensor_mode)))
+            sensor_port.bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = y, dest_sensor=sensor_img_lbl, sensor_port=sensor_port, sensor_mode = sensor_mode: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get(), sensor_mode)))
 
-            py += 0.23
-            by += 0.23
+            y += 0.23
+
 
     def sensor_pic_change(self, x, y, dest_sensor, sensor_type, sensor_mode):
 
@@ -124,42 +127,78 @@ class Port(tk.Frame):
         sensor_img_lbl.photo = sensor_img
         sensor_img_lbl.place(relx=x, rely=y)
 
-    def motor_combobox(self):
+    motor_pic_path = { "none" : "../../pic/none.jpg", 
+                        "large" : "../../pic/large_motor.jpg", 
+                        "midium" : "../../pic/medium_motor.jpg"
+                        }
 
-        motor_pic_path = { "none" : "../../pic/none.jpg", 
-                            "large" : "../../pic/large_motor.jpg", 
-                            "midium" : "../../midium_motor.jpg"
-                            }
+    def motor_combobox(self):
 
         sensor_port_name = ["A", "B", "C", "D"]
 
-        y = 0.15
+        y = 0.1
         for i in sensor_port_name:
+            #port name txt
             label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
-            label.place(relx=0.54, rely=y-0.1, relwidth=0.03, relheight=0.05)
+            label.place(relx=0.54, rely=y, relwidth=0.03, relheight=0.05)
 
+            #port value
+            label = tk.Label(self, relief="sunken", font=("", 15, "bold"))
+            label.place(relx=0.75, rely=y+0.12, relwidth=0.16, relheight=0.07)
+            
+            #mode txt
+            label = tk.Label(self, text="mode")
+            label.place(relx=0.7, rely=y+0.07)
+            
+            #name txt
             label = tk.Label(self, text="motor")
             label.place(relx=0.7, rely=y)
+
+            #mode combobox
+            motor_mode = ttk.Combobox(self, state="readonly",values="NONE")
+            motor_mode.place(relx=0.75, rely=y+0.07)
+            motor_mode.current(0)
+
+            #picture
+            motor_img = Image.open(pathlib.Path(self.motor_pic_path["none"]))
+            motor_img = motor_img.resize((100,100))
+            motor_img = ImageTk.PhotoImage(motor_img)
+
+            motor_img_lbl = tk.Label(self, image=motor_img)
+            motor_img_lbl.photo = motor_img
+            motor_img_lbl.place(relx=0.6, rely=y)
+
+            #name txt
+            label = tk.Label(self, text="motor")
+            label.place(relx=0.7, rely=y)
+
 
             motor_port = ttk.Combobox(self, state="readonly",values=["NONE", "Medium Motor", "Large Motor"])
             motor_port.place(relx=0.75, rely=y)
             motor_port.current(0)
-            motor_port.bind("<<ComboboxSelected>>", (lambda e, motor_port=motor_port: print(motor_port.get())))
+            motor_port.bind("<<ComboboxSelected>>", (lambda e,x = 0.6, y = y, dest_motor=motor_img_lbl, motor_port=motor_port: self.motor_pic_change(x, y, dest_motor, motor_port.get())))
 
             y += 0.23
 
-        y = 0.1
-        for i in range(4):
+    def motor_pic_change(self, x, y, dest_motor, motor_type):
 
-            sensor_img = Image.open(pathlib.Path(motor_pic_path["none"]))
-            sensor_img = sensor_img.resize((100,100))
-            sensor_img = ImageTk.PhotoImage(sensor_img)
+        if motor_type == "NONE":
+            motor_type = "none"
+            mode = ["NONE"]
+        elif motor_type == "Medium Motor":
+            motor_type = "midium"
+        elif motor_type == "Large Motor":
+            motor_type = "large"
 
-            sensor_img_lbl = tk.Label(self, image=sensor_img)
-            sensor_img_lbl.photo = sensor_img
-            sensor_img_lbl.place(relx=0.6, rely=y)
+        dest_motor.destroy()
 
-            y += 0.23
+        motor_img = Image.open(pathlib.Path(self.motor_pic_path[motor_type]))
+        motor_img = motor_img.resize((100,100))
+        motor_img = ImageTk.PhotoImage(motor_img)
+
+        motor_img_lbl = tk.Label(self, image=motor_img)
+        motor_img_lbl.photo = motor_img
+        motor_img_lbl.place(relx=x, rely=y)
 
     def ret_name(self):
         return self.name
