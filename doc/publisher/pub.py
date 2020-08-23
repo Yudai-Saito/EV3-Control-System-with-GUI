@@ -6,14 +6,14 @@ import paho.mqtt.client as mqtt
 
 client = mqtt.Client()
 
-port_stat = { "port1" : "none", 
-                "port2" : "none",
-                "port3" : "none",
-                "port4" : "none",
-                "portA" : "none",
-                "portB" : "none", 
-                "portC" : "none",
-                "portD" : "none"
+port_stat = { "port1" : ["none", "none"], 
+                "port2" : ["none", "none"],
+                "port3" : ["none", "none"],
+                "port4" : ["none", "none"],
+                "portA" : ["none", "none"],
+                "portB" : ["none", "none"], 
+                "portC" : ["none", "none"],
+                "portD" : ["none", "none"]
 }
 
 def connect_t(button):
@@ -34,12 +34,14 @@ def connect_t(button):
         
         messagebox.showinfo("notice", "Connection timeout.")
 
-def set_port(sensor_port, motor_port):
+def set_port(sensor_port, sensor_mode, motor_port, motor_mode):
 
     port_info = sensor_port + motor_port
+    port_mode = sensor_mode + motor_mode
     
-    for key, val in zip(port_stat, port_info):
-        port_stat[key] = val.get()
+    for key, port, mode in zip(port_stat, port_info, port_mode):
+        port_stat[key][0] = port.get()
+        port_stat[key][1] = mode.get()
     
     
     #client.publish("topic/motor/dt", str(0) + "," + str(0))
