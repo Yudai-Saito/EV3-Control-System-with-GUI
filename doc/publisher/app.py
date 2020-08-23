@@ -6,7 +6,7 @@ from tkinter import ttk
 import pathlib
 from PIL import Image, ImageTk
 
-#import pub
+import pub
 
 class Home(tk.Menu, ttk.Notebook):
     def __init__(self, master):
@@ -50,6 +50,17 @@ class Port(tk.Frame):
         
         self.sensor_combobox()
         self.motor_combobox()
+        self.button()
+
+    #描画用にクラス作りたいが、微妙に設計が異なるから難しい。
+
+    def button(self):
+        button = tk.Button(self, text='CONNECT')
+        button.configure(command=lambda button=button: pub.connect(button))
+        button.place(relx=0.1, rely=0.02)
+
+        button = ttk.Button(self, text='SET', command=lambda : pub.client.publish("topic/motor/dt", str(50 * -1) + "," + str(0)))
+        button.place(relx=0.2, rely=0.02)
 
     def sensor_combobox(self):
 
