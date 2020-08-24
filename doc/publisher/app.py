@@ -39,7 +39,7 @@ class Home(tk.Menu, ttk.Notebook):
 class Port(tk.Frame):
     sensor_pic_path = { "none" : "../../pic/none.jpg", 
                         "color" : "../../pic/color_sensor.jpg", 
-                        "jayro" : "../../pic/jayro_sensor.jpg", 
+                        "gayro" : "../../pic/jayro_sensor.jpg", 
                         "touch" : "../../pic/touch_sensor.jpg", 
                         "ultrasonic" : "../../pic/ultrasonic_sensor.jpg"
                         }
@@ -104,7 +104,7 @@ class Port(tk.Frame):
             label.place(relx=0.2, rely=y)
 
             #combobox
-            self.sensor_combobox_array.append(ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Jayro Sensor", "Touch Sensor", "Ultrasonc Sensor"]))
+            self.sensor_combobox_array.append(ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Gyro Sensor", "Touch Sensor", "Ultrasonc Sensor"]))
             self.sensor_combobox_array[array_count].place(relx=0.25, rely=y)
             self.sensor_combobox_array[array_count].current(0)
             self.sensor_combobox_array[array_count].bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = y, dest_sensor=sensor_img_lbl, sensor_port=self.sensor_combobox_array[array_count], sensor_mode = self.sensor_mode_combobox_array[array_count]: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get(), sensor_mode)))
@@ -121,8 +121,8 @@ class Port(tk.Frame):
         elif sensor_type == "Color Sensor":
             sensor_type = "color"
             mode = ["REFLECT", "AMBIENT", "COLOR", "REF-RAW", "RGB-RAW"]
-        elif sensor_type == "Jayro Sensor":
-            sensor_type = "jayro"
+        elif sensor_type == "Gyro Sensor":
+            sensor_type = "gayro"
             mode = ["ANGLE", "RATE", "FAS", "G&A", "CAL"]
         elif sensor_type == "Touch Sensor":
             sensor_type = "touch"
@@ -173,9 +173,9 @@ class Port(tk.Frame):
             label.place(relx=0.7, rely=y)
 
             #mode combobox
-            self.motor_combobox_array.append(ttk.Combobox(self, state="readonly",values="NONE"))
-            self.motor_combobox_array[array_count].place(relx=0.75, rely=y+0.07)
-            self.motor_combobox_array[array_count].current(0)
+            self.motor_mode_combobox_array.append(ttk.Combobox(self, state="readonly",values="NONE"))
+            self.motor_mode_combobox_array[array_count].place(relx=0.75, rely=y+0.07)
+            self.motor_mode_combobox_array[array_count].current(0)
 
             #picture
             motor_img = Image.open(pathlib.Path(self.motor_pic_path["none"]))
