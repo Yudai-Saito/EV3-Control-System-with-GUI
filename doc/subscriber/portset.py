@@ -1,23 +1,29 @@
 #coding:utf-8
 
 import sub
+import time
+import json
+import threading
 from ev3dev.auto import *
 
+connect_flag = False
+
+port_names = ["port1", "port2", "port3", "port4", "portA", "portB", "portC", "portD"]
+set_ports = ["in1", "in2", "in3", "in4", "outA", "outB", "outC", "outD"]
 
 def set_port(client, userdata, msg):
+    global connect_flag
+    connect_flag = False
     
     msg = msg.payload.decode("utf-8")
     
     port_stat = json.loads(msg)
 
-    port_names = ["port1", "port2", "port3", "port4", "portA", "portB", "portC", "portD"]
-    set_ports = ["in1", "in2", "in3", "in4", "outA", "outB", "outC", "outD"]
-
     for port_name, set_port in zip(port_names, set_ports):
     
         try:
-            if port_stat[port_name][0] == "none":
-                port_stat[port_name][0] = None
+            if port_stat[port_name][0] == "NONE":
+                port_stat[port_name][0] = "NONE"
 
             elif port_stat[port_name][0] == "Color Sensor":
                 port_stat[port_name][0] = ColorSensor(set_port)
@@ -65,14 +71,53 @@ def set_port(client, userdata, msg):
             elif port_stat[port_name][0] == "Medium Motor":
                 port_stat[port_name][0] = MediumMotor(set_port)
                 port_stat[port_name][0].state
+                """
+                This process is checking connections.
+                if port_stat[port_name][0].state raise error, This device is not connected motor.
+                """
 
             elif port_stat[port_name][0] == "Large Motor":
                 port_stat[port_name][0] = LargeMotor(set_port)
                 port_stat[port_name][0].state
 
         except :
-            port_stat[port_name][0] = None
+            port_stat[port_name][0] = "NONE"
 
-    sub.client.publish("test", "Port setting was complete.")
+    send_port_info(client, port_stat)
 
     sub.client.on_message = sub.divide
+
+
+def send_port_info(client, port_stat):
+    global connect_flag
+    connect_flag = True
+
+    send_port_info_th = threading.Thread(target=send_port_info_t, args=(client, port_stat,))
+    send_port_info_th.setDaemon(True)
+    send_port_info_th.start()
+
+
+def send_port_info_t(client, port_stat):
+
+    while connect_flag == True:
+
+        port_info = []
+
+        try:
+            for port_name in port_names:
+                if port_stat[port_name][0] == "NONE":
+                    port_info.append(None)
+
+                elif port_stat[port_name][0].mode == "TOUCH":
+                    port_info.append(port_stat[port_name][0].is_pressed)
+
+                elif port_stat[port_name][0].mode == "COL-REFLECT":
+                    port_info.append(port_stat[port_name][0].reflected_light_intensity)
+        except:
+            break
+
+        port_stat_json = json.dumps(port_info)
+
+        client.publish("sub", port_stat_json)
+        
+        time.sleep(0.05)
