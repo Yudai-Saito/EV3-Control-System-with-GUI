@@ -14,7 +14,6 @@ class Home(tk.Menu, ttk.Notebook):
         self.create_note(master)
         self.create_menu(master)
         
-        
     def create_note(self, master):
         note = ttk.Notebook(master)
 
@@ -39,7 +38,7 @@ class Home(tk.Menu, ttk.Notebook):
 class Port(tk.Frame):
     sensor_pic_path = { "none" : "../../pic/none.jpg", 
                         "color" : "../../pic/color_sensor.jpg", 
-                        "gayro" : "../../pic/jayro_sensor.jpg", 
+                        "gyro" : "../../pic/gyro_sensor.jpg", 
                         "touch" : "../../pic/touch_sensor.jpg", 
                         "ultrasonic" : "../../pic/ultrasonic_sensor.jpg"
                         }
@@ -122,7 +121,7 @@ class Port(tk.Frame):
             sensor_type = "color"
             mode = ["REFLECT", "AMBIENT", "COLOR", "REF-RAW", "RGB-RAW"]
         elif sensor_type == "Gyro Sensor":
-            sensor_type = "gayro"
+            sensor_type = "gyro"
             mode = ["ANGLE", "RATE", "FAS", "G&A", "CAL"]
         elif sensor_type == "Touch Sensor":
             sensor_type = "touch"
