@@ -70,15 +70,16 @@ def set_port(client, userdata, msg):
 
             elif port_stat[port_name][0] == "Medium Motor":
                 port_stat[port_name][0] = MediumMotor(set_port)
-                port_stat[port_name][0].state
+                port_stat[port_name][0].position = 0
                 """
                 This process is checking connections.
-                if port_stat[port_name][0].state raise error, This device is not connected motor.
+                port_stat[port_name][0].position = 0 raise error, This device is not connected motor.
+                and Motor angle position reset.
                 """
 
             elif port_stat[port_name][0] == "Large Motor":
                 port_stat[port_name][0] = LargeMotor(set_port)
-                port_stat[port_name][0].state
+                port_stat[port_name][0].position = 0
 
         except :
             port_stat[port_name][0] = "NONE"
@@ -108,11 +109,15 @@ def send_port_info_t(client, port_stat):
                 if port_stat[port_name][0] == "NONE":
                     port_info.append(None)
 
-                elif port_stat[port_name][0].mode == "TOUCH":
-                    port_info.append(port_stat[port_name][0].is_pressed)
+                elif port_stat[port_name][0].driver_name == "lego-ev3-l-motor" or port_stat[port_name][0].driver_name == "lego-ev3-m-motor":
+                    if port_stat[port_name][0].position > 360:
+                        port_stat[port_name][0].position = 0
+                    elif port_stat[port_name][0].position < 0:
+                        port_stat[port_name][0].position = 360
+                    port_info.append(port_stat[port_name][0].position)
 
-                elif port_stat[port_name][0].mode == "COL-REFLECT":
-                    port_info.append(port_stat[port_name][0].reflected_light_intensity)
+                else:
+                    port_info.append(port_stat[port_name][0].value(0))
         except:
             break
 
