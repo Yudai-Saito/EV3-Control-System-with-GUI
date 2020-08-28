@@ -43,11 +43,11 @@ class Port(tk.Frame):
                         "ultrasonic" : "../../pic/ultrasonic_sensor.jpg"
                         }
 
-    sensor_combobox_array = []
-    sensor_mode_combobox_array = []
+    sensor_comboboxes = []
+    sensor_mode_comboboxes = []
     
-    motor_combobox_array = []
-    motor_mode_combobox_array = []
+    motor_comboboxes = []
+    motor_mode_comboboxes = []
 
     def __init__(self, master=None, txt=None):
         super().__init__(master)
@@ -62,7 +62,7 @@ class Port(tk.Frame):
         button.configure(command=lambda button=button : pub.connect(button))
         button.place(relx=0.1, rely=0.02)
 
-        button = ttk.Button(self, text='SET', command=lambda : pub.set_port(self.sensor_combobox_array, self.sensor_mode_combobox_array, self.motor_combobox_array, self.motor_mode_combobox_array))
+        button = ttk.Button(self, text='SET', command=lambda : pub.set_port(self.sensor_comboboxes, self.sensor_mode_comboboxes, self.motor_comboboxes, self.motor_mode_comboboxes))
         button.place(relx=0.2, rely=0.02)
 
     def sensor_combobox(self):
@@ -85,9 +85,9 @@ class Port(tk.Frame):
             label.place(relx=0.2, rely=y+0.07)
 
             #mode combobox
-            self.sensor_mode_combobox_array.append(ttk.Combobox(self, state="readonly",values="NONE"))
-            self.sensor_mode_combobox_array[array_count].place(relx=0.25, rely=y+0.07)
-            self.sensor_mode_combobox_array[array_count].current(0)
+            self.sensor_mode_comboboxes.append(ttk.Combobox(self, state="readonly",values="NONE"))
+            self.sensor_mode_comboboxes[array_count].place(relx=0.25, rely=y+0.07)
+            self.sensor_mode_comboboxes[array_count].current(0)
 
             #picture
             sensor_img = Image.open(pathlib.Path(self.sensor_pic_path["none"]))
@@ -103,10 +103,10 @@ class Port(tk.Frame):
             label.place(relx=0.2, rely=y)
 
             #combobox
-            self.sensor_combobox_array.append(ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Gyro Sensor", "Touch Sensor", "Ultrasonc Sensor"]))
-            self.sensor_combobox_array[array_count].place(relx=0.25, rely=y)
-            self.sensor_combobox_array[array_count].current(0)
-            self.sensor_combobox_array[array_count].bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = y, dest_sensor=sensor_img_lbl, sensor_port=self.sensor_combobox_array[array_count], sensor_mode = self.sensor_mode_combobox_array[array_count]: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get(), sensor_mode)))
+            self.sensor_comboboxes.append(ttk.Combobox(self, state="readonly",values=["NONE", "Color Sensor", "Gyro Sensor", "Touch Sensor", "Ultrasonc Sensor"]))
+            self.sensor_comboboxes[array_count].place(relx=0.25, rely=y)
+            self.sensor_comboboxes[array_count].current(0)
+            self.sensor_comboboxes[array_count].bind("<<ComboboxSelected>>", (lambda e,x = 0.09, y = y, dest_sensor=sensor_img_lbl, sensor_port=self.sensor_comboboxes[array_count], sensor_mode = self.sensor_mode_comboboxes[array_count]: self.sensor_pic_change(x, y, dest_sensor, sensor_port.get(), sensor_mode)))
 
             array_count += 1
             y += 0.23
@@ -172,9 +172,9 @@ class Port(tk.Frame):
             label.place(relx=0.7, rely=y)
 
             #mode combobox
-            self.motor_mode_combobox_array.append(ttk.Combobox(self, state="readonly",values="NONE"))
-            self.motor_mode_combobox_array[array_count].place(relx=0.75, rely=y+0.07)
-            self.motor_mode_combobox_array[array_count].current(0)
+            self.motor_mode_comboboxes.append(ttk.Combobox(self, state="readonly",values="NONE"))
+            self.motor_mode_comboboxes[array_count].place(relx=0.75, rely=y+0.07)
+            self.motor_mode_comboboxes[array_count].current(0)
 
             #picture
             motor_img = Image.open(pathlib.Path(self.motor_pic_path["none"]))
@@ -190,10 +190,10 @@ class Port(tk.Frame):
             label.place(relx=0.7, rely=y)
 
 
-            self.motor_combobox_array.append(ttk.Combobox(self, state="readonly",values=["NONE", "Medium Motor", "Large Motor"]))
-            self.motor_combobox_array[array_count].place(relx=0.75, rely=y)
-            self.motor_combobox_array[array_count].current(0)
-            self.motor_combobox_array[array_count].bind("<<ComboboxSelected>>", (lambda e,x = 0.6, y = y, dest_motor=motor_img_lbl, motor_port=self.motor_combobox_array[array_count]: self.motor_pic_change(x, y, dest_motor, motor_port.get())))
+            self.motor_comboboxes.append(ttk.Combobox(self, state="readonly",values=["NONE", "Medium Motor", "Large Motor"]))
+            self.motor_comboboxes[array_count].place(relx=0.75, rely=y)
+            self.motor_comboboxes[array_count].current(0)
+            self.motor_comboboxes[array_count].bind("<<ComboboxSelected>>", (lambda e,x = 0.6, y = y, dest_motor=motor_img_lbl, motor_port=self.motor_comboboxes[array_count]: self.motor_pic_change(x, y, dest_motor, motor_port.get())))
 
             array_count += 1
             y += 0.23
