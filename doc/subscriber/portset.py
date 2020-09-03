@@ -107,7 +107,7 @@ def send_port_info_t(client, port_stat):
         try:
             for port_name in port_names:
                 if port_stat[port_name][0] == "NONE":
-                    port_info.append(None)
+                    port_info.append("NONE")
 
                 elif port_stat[port_name][0].driver_name == "lego-ev3-l-motor" or port_stat[port_name][0].driver_name == "lego-ev3-m-motor":
                     if port_stat[port_name][0].position > 360:
