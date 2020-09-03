@@ -45,9 +45,11 @@ class Port(tk.Frame):
 
     sensor_comboboxes = []
     sensor_mode_comboboxes = []
+    sensor_text_labels = []
     
     motor_comboboxes = []
     motor_mode_comboboxes = []
+    motor_text_labels = []
 
     def __init__(self, master=None, txt=None):
         super().__init__(master)
@@ -77,8 +79,8 @@ class Port(tk.Frame):
             label.place(relx=0.04, rely=y, relwidth=0.03, relheight=0.05)
 
             #port value
-            label = tk.Label(self, relief="sunken", font=("", 15, "bold"))
-            label.place(relx=0.25, rely=y+0.12, relwidth=0.16, relheight=0.07)
+            Port.sensor_text_labels.append(tk.Label(self, relief="sunken", font=("", 15, "bold")))
+            Port.sensor_text_labels[array_count].place(relx=0.25, rely=y+0.12, relwidth=0.16, relheight=0.07)
 
             #mode txt
             label = tk.Label(self, text="mode")
@@ -160,8 +162,8 @@ class Port(tk.Frame):
             label.place(relx=0.54, rely=y, relwidth=0.03, relheight=0.05)
 
             #port value
-            label = tk.Label(self, relief="sunken", font=("", 15, "bold"))
-            label.place(relx=0.75, rely=y+0.12, relwidth=0.16, relheight=0.07)
+            Port.motor_text_labels.append(tk.Label(self, relief="sunken", font=("", 15, "bold")))
+            Port.motor_text_labels[array_count].place(relx=0.75, rely=y+0.12, relwidth=0.16, relheight=0.07)
             
             #mode txt
             label = tk.Label(self, text="mode")
@@ -235,13 +237,3 @@ class Trace(tk.Frame):
 
     def ret_name(self):
         return self.name
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.geometry("1100x600")
-    root.title("EV3 Control System with GUI")
-
-    app = Home(master=root)
-
-    root.mainloop()

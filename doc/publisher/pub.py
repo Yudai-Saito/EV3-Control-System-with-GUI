@@ -5,6 +5,8 @@ import threading
 from tkinter import messagebox
 import paho.mqtt.client as mqtt
 
+import app
+
 client = mqtt.Client()
 
 port_stat = { "port1" : ["none", "none"], 
@@ -31,11 +33,32 @@ def connect_t(button):
 
         messagebox.showinfo("notice", "Connection complete.")
 
+        client.on_message = set_text
+        client.subscribe("sub")
+
         client.loop_forever()
     except:
         button.configure(state="normal")
         
         messagebox.showinfo("notice", "Connection timeout.")
+
+
+def set_text(client, userdata, msg):
+    ret_port_stat = msg.payload.decode("utf-8")
+    ret_port_stat = json.loads(ret_port_stat)
+    
+    set_text_th = threading.Thread(target=set_text_t, args=(ret_port_stat,))
+    set_text_th.setDaemon(True)
+    set_text_th.start()
+
+
+def set_text_t(ret_port_stat):
+
+    text_labels = app.Port.sensor_text_labels + app.Port.motor_text_labels
+
+    for i in range(len(text_labels)):
+        text_labels[i].configure(text=ret_port_stat[i])
+            
 
 def set_port(sensor_port, sensor_mode, motor_port, motor_mode):
 
@@ -47,12 +70,11 @@ def set_port(sensor_port, sensor_mode, motor_port, motor_mode):
     for key, port, mode in zip(port_stat, port_info, port_mode):
         port_stat[key][0] = port.get()
         port_stat[key][1] = mode.get()
-    
+
     port_stat_json = json.dumps(port_stat)
 
     client.publish("test", port_stat_json)
-    
-    #client.publish("topic/motor/dt", port_stat_json)
+
 
 def connect(button):
 
