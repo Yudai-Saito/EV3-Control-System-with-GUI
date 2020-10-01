@@ -7,6 +7,8 @@ import paho.mqtt.client as mqtt
 
 import app
 
+connect_flag = False
+
 client = mqtt.Client()
 
 port_stat = { "port1" : ["none", "none"], 
@@ -21,19 +23,32 @@ port_stat = { "port1" : ["none", "none"],
 
 #接続時のフラグと切断時のフラグ管理が必要。 未接続の場合にボタンを押した場合のエラーを防ぐ。
 
-def connect_t(button):
+def disconnect(client, userdata, flag, rc):
+    connect_flag = False
+    pass
+
+
+def connect(button):
+
+    connect_th = threading.Thread(target=connect_t, args=(button,), daemon=True)
+    connect_th.start()
     
-    button.configure(state="disable")
+
+def connect_t(button):
 
     try:
         #IPは選択できるように後改変。
         client.connect("192.168.0.1",1883,60)
-
-        button.configure(bg="#94FF33")
+        
+        button.configure(bg="#94FF33", state="disable")
 
         messagebox.showinfo("notice", "Connection complete.")
 
+        connect_flag = True
+
         client.on_message = set_text
+        client.on_disconnect = disconnect
+
         client.subscribe("sub")
 
         client.loop_forever()
@@ -47,8 +62,7 @@ def set_text(client, userdata, msg):
     ret_port_stat = msg.payload.decode("utf-8")
     ret_port_stat = json.loads(ret_port_stat)
     
-    set_text_th = threading.Thread(target=set_text_t, args=(ret_port_stat,))
-    set_text_th.setDaemon(True)
+    set_text_th = threading.Thread(target=set_text_t, args=(ret_port_stat,), daemon=True)
     set_text_th.start()
 
 
@@ -62,6 +76,10 @@ def set_text_t(ret_port_stat):
 
 def set_port(sensor_port, sensor_mode, motor_port, motor_mode):
 
+    if connect_flag == False:
+        messagebox.showinfo("notice", "No connection to the EV3.")
+        return
+
     client.publish("test", "set_port")
 
     port_info = sensor_port + motor_port
@@ -74,10 +92,3 @@ def set_port(sensor_port, sensor_mode, motor_port, motor_mode):
     port_stat_json = json.dumps(port_stat)
 
     client.publish("test", port_stat_json)
-
-
-def connect(button):
-
-    connect_th = threading.Thread(target=connect_t, args=(button,))
-    connect_th.setDaemon(True)
-    connect_th.start()
