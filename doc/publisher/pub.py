@@ -24,27 +24,30 @@ port_stat = { "port1" : ["none", "none"],
 #接続時のフラグと切断時のフラグ管理が必要。 未接続の場合にボタンを押した場合のエラーを防ぐ。
 
 def disconnect(client, userdata, flag, rc):
+
     connect_flag = False
-    pass
+    app.Port.connect_button.configure(background=app.Port.origin_color, state="enable")
 
 
-def connect(button):
+def connect():
 
-    connect_th = threading.Thread(target=connect_t, args=(button,), daemon=True)
+    connect_th = threading.Thread(target=connect_t, daemon=True)
     connect_th.start()
     
 
-def connect_t(button):
+def connect_t():
 
     try:
+        app.Port.connect_button.configure(state="disable")
+
         #IPは選択できるように後改変。
         client.connect("192.168.0.1",1883,60)
-        
-        button.configure(bg="#94FF33", state="disable")
 
         messagebox.showinfo("notice", "Connection complete.")
 
         connect_flag = True
+
+        app.Port.connect_button.configure(background="#94FF33")
 
         client.on_message = set_text
         client.on_disconnect = disconnect
@@ -53,12 +56,13 @@ def connect_t(button):
 
         client.loop_forever()
     except:
-        button.configure(state="normal")
+        app.Port.connect_button.configure(background=app.Port.origin_color, state="normal")
         
         messagebox.showinfo("notice", "Connection timeout.")
 
 
 def set_text(client, userdata, msg):
+    
     ret_port_stat = msg.payload.decode("utf-8")
     ret_port_stat = json.loads(ret_port_stat)
     

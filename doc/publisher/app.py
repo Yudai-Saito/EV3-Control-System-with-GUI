@@ -51,6 +51,9 @@ class Port(tk.Frame):
     motor_mode_comboboxes = []
     motor_text_labels = []
 
+    connect_button = None
+    origin_color = None
+
     def __init__(self, master=None, txt=None):
         super().__init__(master)
         self.name = txt
@@ -60,9 +63,11 @@ class Port(tk.Frame):
         self.button()
 
     def button(self):
-        button = tk.Button(self, text='CONNECT')
-        button.configure(command=lambda button=button : pub.connect(button))
-        button.place(relx=0.1, rely=0.02)
+        Port.connect_button = tk.Button(self, text='CONNECT')
+        Port.connect_button.configure(command=lambda : pub.connect())
+        Port.connect_button.place(relx=0.1, rely=0.02)
+
+        Port.origin_color = Port.connect_button.cget("background")
 
         button = ttk.Button(self, text='SET', command=lambda : pub.set_port(self.sensor_comboboxes, self.sensor_mode_comboboxes, self.motor_comboboxes, self.motor_mode_comboboxes))
         button.place(relx=0.2, rely=0.02)
