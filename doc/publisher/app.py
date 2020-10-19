@@ -9,6 +9,8 @@ from PIL import Image, ImageTk
 import pub
 
 class Home(tk.Menu, ttk.Notebook):
+    flag = True
+
     def __init__(self, master):
         super().__init__(master)
         self.create_note(master)
@@ -17,12 +19,20 @@ class Home(tk.Menu, ttk.Notebook):
     def create_note(self, master):
         note = ttk.Notebook(master)
 
-        notes = [Port(note, "Port"), Trace(note, "LineTrace")]
+        notes = [Port(note, "Port")]
 
         for i in notes:
             note.add(i, text=i.ret_name())
 
+        note.bind("<w>", self.callkey)
+        note.bind("<a>", self.callkey)
+        note.bind("<s>", self.callkey)
+        note.bind("<d>", self.callkey)
+
+        note.bind("<<NotebookTabChanged>>", self.note_stat)
+
         note.pack(fill=tk.BOTH, expand=True) 
+        note.focus_set()
 
     def create_menu(self, master):
         menubar = tk.Menu(master)
@@ -34,6 +44,17 @@ class Home(tk.Menu, ttk.Notebook):
         
         master.config(menu=menubar)
 
+    def note_stat(self, event):
+        note = event.widget
+
+        if note.tab(note.select(), "text") == "Port":
+            Home.flag = True
+        else:
+            Home.flag = False
+    
+    def callkey(self, event):
+        if Home.flag == True:
+            pass
 
 class Port(tk.Frame):
     sensor_pic_path = { "none" : "../../pic/none.jpg", 
@@ -53,6 +74,8 @@ class Port(tk.Frame):
 
     connect_button = None
     origin_color = None
+    
+    motor_power = 50
 
     def __init__(self, master=None, txt=None):
         super().__init__(master)
@@ -63,14 +86,53 @@ class Port(tk.Frame):
         self.button()
 
     def button(self):
-        Port.connect_button = tk.Button(self, text='CONNECT')
+        Port.connect_button = tk.Button(self, text="CONNECT")
         Port.connect_button.configure(command=lambda : pub.connect())
         Port.connect_button.place(relx=0.1, rely=0.02)
 
         Port.origin_color = Port.connect_button.cget("background")
 
-        button = ttk.Button(self, text='SET', command=lambda : pub.set_port(self.sensor_comboboxes, self.sensor_mode_comboboxes, self.motor_comboboxes, self.motor_mode_comboboxes))
+        button = ttk.Button(self, text="SET", command=lambda : pub.set_port(self.sensor_comboboxes, self.sensor_mode_comboboxes, self.motor_comboboxes, self.motor_mode_comboboxes))
         button.place(relx=0.2, rely=0.02)
+
+        chk = tk.Checkbutton(self, text="minus")
+        chk.place(relx=0.5, rely=0.02)
+
+        label = tk.Entry(self, relief="groove", font=("", 15, "bold"), justify="center")
+        label.insert(0, Port.motor_power)
+        label.configure(state="readonly")
+        label.place(relx=0.58, rely=0.02, relwidth=0.07, relheight=0.05)
+
+        plus_button = tk.Button(self, text="+10", font=("", 15))
+        plus_button.configure(command=lambda poewerbox = label : self.increment(10, poewerbox))
+        plus_button.place(relx=0.66, rely=0.02, relwidth=0.05, relheight=0.05)
+
+        plus_button = tk.Button(self, text="+1", font=("", 15))
+        plus_button.configure(command=lambda poewerbox = label : self.increment(1, poewerbox))
+        plus_button.place(relx=0.71, rely=0.02, relwidth=0.05, relheight=0.05)
+
+        minus_button = tk.Button(self, text="-1", font=("", 15))
+        minus_button.configure(command=lambda poewerbox = label : self.increment(-1, poewerbox))
+        minus_button.place(relx=0.76, rely=0.02, relwidth=0.05, relheight=0.05)
+
+        minus_button = tk.Button(self, text="-10", font=("", 15))
+        minus_button.configure(command=lambda poewerbox = label : self.increment(-10, poewerbox))
+        minus_button.place(relx=0.81, rely=0.02, relwidth=0.05, relheight=0.05)
+
+
+    def increment(self, power, poewerbox):
+        Port.motor_power += power
+
+        if Port.motor_power > 100:
+            Port.motor_power = 100
+        elif Port.motor_power < 0:
+            Port.motor_power = 0
+        
+        poewerbox.configure(state="normal")
+        poewerbox.delete(0, tk.END)
+        poewerbox.insert(0, Port.motor_power)
+        poewerbox.configure(state="readonly")
+
 
     def sensor_combobox(self):
 
@@ -224,21 +286,6 @@ class Port(tk.Frame):
         motor_img_lbl = tk.Label(self, image=motor_img)
         motor_img_lbl.photo = motor_img
         motor_img_lbl.place(relx=x, rely=y)
-
-    def ret_name(self):
-        return self.name
-
-
-class Trace(tk.Frame):
-    def __init__(self, master=None, txt=None):
-        super().__init__(master)
-        self.name = txt
-
-        self.widget(txt)
-
-    def widget(self, txt):
-        label = tk.Label(self, text=txt, font=("", 30))
-        label.pack()
 
     def ret_name(self):
         return self.name
