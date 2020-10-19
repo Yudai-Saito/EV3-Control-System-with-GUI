@@ -4,7 +4,7 @@ import json
 import paho.mqtt.client as mqtt
 
 import portset
-#import linetrace
+import linetrace
 
 def on_connect(client, userdata, flags, rc):
 
@@ -12,7 +12,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("test")
 
 
-def divide(client, userdata, msg):
+def separate(client, userdata, msg):
 
     msg = msg.payload.decode("utf-8")
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     try:
         client = mqtt.Client()
         client.connect("localhost", 1883, 60)
-        client.on_message = divide
+        client.on_message = separate
         client.on_connect = on_connect
     
     except:

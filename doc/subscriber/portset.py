@@ -14,7 +14,7 @@ set_ports = ["in1", "in2", "in3", "in4", "outA", "outB", "outC", "outD"]
 def set_port(client, userdata, msg):
     global connect_flag
     connect_flag = False
-    
+
     msg = msg.payload.decode("utf-8")
     
     port_stat = json.loads(msg)
@@ -86,15 +86,14 @@ def set_port(client, userdata, msg):
 
     send_port_info(client, port_stat)
 
-    sub.client.on_message = sub.divide
+    sub.client.on_message = sub.separate
 
 
 def send_port_info(client, port_stat):
     global connect_flag
     connect_flag = True
 
-    send_port_info_th = threading.Thread(target=send_port_info_t, args=(client, port_stat,))
-    send_port_info_th.setDaemon(True)
+    send_port_info_th = threading.Thread(target=send_port_info_t, args=(client, port_stat,), daemon=True)
     send_port_info_th.start()
 
 
