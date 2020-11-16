@@ -10,6 +10,7 @@ import pub
 
 class Home(tk.Menu, ttk.Notebook):
     flag = True
+    ip = "192.168.0.1"
 
     def __init__(self, master):
         super().__init__(master)
@@ -24,11 +25,8 @@ class Home(tk.Menu, ttk.Notebook):
         for i in notes:
             note.add(i, text=i.ret_name())
 
-        note.bind("<w>", self.callkey)
-        note.bind("<a>", self.callkey)
-        note.bind("<s>", self.callkey)
-        note.bind("<d>", self.callkey)
-
+        note.bind("<Any-KeyPress>", self.callkey)
+        note.bind("<Any-KeyRelease>", self.back)
         note.bind("<<NotebookTabChanged>>", self.note_stat)
 
         note.pack(fill=tk.BOTH, expand=True) 
@@ -38,11 +36,29 @@ class Home(tk.Menu, ttk.Notebook):
         menubar = tk.Menu(master)
         
         filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Exit", command= lambda: exit())
+        filemenu.add_command(label="IP Setting", command = lambda app = master: self.ip_set(app))
+        filemenu.add_command(label="Exit", command = lambda: exit())
 
         menubar.add_cascade(label="File", menu=filemenu)
         
         master.config(menu=menubar)
+
+    def ip_set(self, app):
+        newWindow = tk.Toplevel(app)
+        newWindow.title("modal dialog")
+        newWindow.geometry("300x100")
+
+        label = tk.Entry(newWindow, relief="groove", font=("", 15, "bold"), justify="center")
+        label.insert(0, Home.ip)
+        label.pack()
+
+        button = tk.Button(newWindow, text="SET")
+        button.configure(command=lambda label = label, window = newWindow : self.get_ip(label, window))
+        button.pack()
+
+    def get_ip(self, label, window):
+        Home.ip = label.get()
+        window.destroy()
 
     def note_stat(self, event):
         note = event.widget
@@ -51,10 +67,17 @@ class Home(tk.Menu, ttk.Notebook):
             Home.flag = True
         else:
             Home.flag = False
-    
+
     def callkey(self, event):
         if Home.flag == True:
-            pass
+            if event.keysym == "w" or event.keysym == "a" or event.keysym == "s" or event.keysym == "d" or event.keysym == "q" or event.keysym == "e" or event.keysym == "r" or event.keysym == "f" or event.keysym == "t" or event.keysym == "g":
+                pub.key_event(event.keysym, "press")
+
+    def back(self, event):
+        if Home.flag == True:
+            if event.keysym == "w" or event.keysym == "a" or event.keysym == "s" or event.keysym == "d" or event.keysym == "q" or event.keysym == "e" or event.keysym == "r" or event.keysym == "f" or event.keysym == "t" or event.keysym == "g":
+                pub.key_event(event.keysym, "release")
+
 
 class Port(tk.Frame):
     sensor_pic_path = { "none" : "../../pic/none.jpg", 
@@ -67,13 +90,15 @@ class Port(tk.Frame):
     sensor_comboboxes = []
     sensor_mode_comboboxes = []
     sensor_text_labels = []
-    
+
     motor_comboboxes = []
     motor_mode_comboboxes = []
     motor_text_labels = []
+    motor_check = []
 
     connect_button = None
     origin_color = None
+    chk = None
     
     motor_power = 50
 
@@ -95,26 +120,32 @@ class Port(tk.Frame):
         button = ttk.Button(self, text="SET", command=lambda : pub.set_port(self.sensor_comboboxes, self.sensor_mode_comboboxes, self.motor_comboboxes, self.motor_mode_comboboxes))
         button.place(relx=0.2, rely=0.02)
 
-        chk = tk.Checkbutton(self, text="minus")
+        Port.chk = tk.BooleanVar()
+        chk = tk.Checkbutton(self, text="minus", variable=Port.chk)
         chk.place(relx=0.5, rely=0.02)
 
+        #power display
         label = tk.Entry(self, relief="groove", font=("", 15, "bold"), justify="center")
         label.insert(0, Port.motor_power)
         label.configure(state="readonly")
         label.place(relx=0.58, rely=0.02, relwidth=0.07, relheight=0.05)
 
+        #+10 button
         plus_button = tk.Button(self, text="+10", font=("", 15))
         plus_button.configure(command=lambda poewerbox = label : self.increment(10, poewerbox))
         plus_button.place(relx=0.66, rely=0.02, relwidth=0.05, relheight=0.05)
 
+        #+1 button
         plus_button = tk.Button(self, text="+1", font=("", 15))
         plus_button.configure(command=lambda poewerbox = label : self.increment(1, poewerbox))
         plus_button.place(relx=0.71, rely=0.02, relwidth=0.05, relheight=0.05)
 
+        #-1 button
         minus_button = tk.Button(self, text="-1", font=("", 15))
         minus_button.configure(command=lambda poewerbox = label : self.increment(-1, poewerbox))
         minus_button.place(relx=0.76, rely=0.02, relwidth=0.05, relheight=0.05)
 
+        #-10 button
         minus_button = tk.Button(self, text="-10", font=("", 15))
         minus_button.configure(command=lambda poewerbox = label : self.increment(-10, poewerbox))
         minus_button.place(relx=0.81, rely=0.02, relwidth=0.05, relheight=0.05)
@@ -227,6 +258,11 @@ class Port(tk.Frame):
             #port name txt
             label = tk.Label(self, text=i, relief="groove", font=("", 15, "bold"))
             label.place(relx=0.54, rely=y, relwidth=0.03, relheight=0.05)
+
+            #checkbox
+            Port.motor_check.append(tk.BooleanVar())
+            chk = tk.Checkbutton(self, variable=Port.motor_check[array_count])
+            chk.place(relx=0.54, rely=y + 0.05)
 
             #port value
             Port.motor_text_labels.append(tk.Label(self, relief="sunken", font=("", 15, "bold")))

@@ -4,7 +4,7 @@ import json
 import paho.mqtt.client as mqtt
 
 import portset
-import linetrace
+import keyboardmove
 
 def on_connect(client, userdata, flags, rc):
 
@@ -18,6 +18,12 @@ def separate(client, userdata, msg):
 
     if msg == "set_port":
         client.on_message = portset.set_port
+    elif msg == "key_motor":
+        client.on_message = keyboardmove.set_key_motor
+    elif msg == "press":
+        client.on_message = keyboardmove.press_key
+    elif msg == "release":
+        client.on_message = keyboardmove.release_key
 
 
 if __name__ == "__main__":

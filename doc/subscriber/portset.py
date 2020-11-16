@@ -7,12 +7,13 @@ import threading
 from ev3dev.auto import *
 
 connect_flag = False
+port_stat = None
 
 port_names = ["port1", "port2", "port3", "port4", "portA", "portB", "portC", "portD"]
 set_ports = ["in1", "in2", "in3", "in4", "outA", "outB", "outC", "outD"]
 
 def set_port(client, userdata, msg):
-    global connect_flag
+    global connect_flag, port_stat
     connect_flag = False
 
     msg = msg.payload.decode("utf-8")
@@ -84,9 +85,13 @@ def set_port(client, userdata, msg):
         except :
             port_stat[port_name][0] = "NONE"
 
-    send_port_info(client, port_stat)
+    client.on_message = sub.separate
 
-    sub.client.on_message = sub.separate
+    msg = "complete"
+    
+    client.publish("sub", msg)
+
+    send_port_info(client, port_stat)
 
 
 def send_port_info(client, port_stat):
@@ -123,5 +128,5 @@ def send_port_info_t(client, port_stat):
         port_stat_json = json.dumps(port_info)
 
         client.publish("sub", port_stat_json)
-        
+
         time.sleep(0.05)
